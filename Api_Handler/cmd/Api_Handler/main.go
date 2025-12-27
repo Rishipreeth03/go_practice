@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Rishipreeth03/Api_Handler/Api_Handler/internal/config"
+	"github.com/Rishipreeth03/Api_Handler/Api_Handler/internal/http/handlers/student"
 )
 
 func main() {
@@ -20,9 +21,7 @@ func main() {
 	//database setup
 	//setup router
 	router := http.NewServeMux()
-	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to API Handler"))
-	})
+	router.HandleFunc("POST /api/students", student.New())
 	//setup server
 
 	server := http.Server{
