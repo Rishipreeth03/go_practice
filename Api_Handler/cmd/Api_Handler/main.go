@@ -13,15 +13,21 @@ import (
 
 	"github.com/Rishipreeth03/Api_Handler/Api_Handler/internal/config"
 	"github.com/Rishipreeth03/Api_Handler/Api_Handler/internal/http/handlers/student"
+	"github.com/Rishipreeth03/Api_Handler/Api_Handler/internal/storage/sqlite"
 )
 
 func main() {
 	//loadconfig
 	cfg := config.MUSTLoad()
 	//database setup
+	storage, err := sqlite.New(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	slog.Info("Storage Initialised successfully", slog.String("env", cfg.Env), slog.String("version", "1.0.0"))
 	//setup router
 	router := http.NewServeMux()
-	router.HandleFunc("POST /api/students", student.New())
+	router.HandleFunc("POST /api/students", student.New(storage))
 	//setup server
 
 	server := http.Server{
@@ -42,7 +48,7 @@ func main() {
 	slog.Info("Server stopped")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	err := server.Shutdown(ctx)
+	err = server.Shutdown(ctx)
 	if err != nil {
 		slog.Error("Failed to shutdown", slog.String("error", err.Error()))
 	}
