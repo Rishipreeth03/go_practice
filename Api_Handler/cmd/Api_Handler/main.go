@@ -20,6 +20,9 @@ func main() {
 	//loadconfig
 	cfg := config.MUSTLoad()
 	//database setup
+	//you can simply shift to other storage by changing this line
+	//like	postgres.New(cfg) or mongo.New(cfg) and do
+	//not forget to implement storage.Storage interface methods
 	storage, err := sqlite.New(cfg)
 	if err != nil {
 		log.Fatal(err)
@@ -28,6 +31,8 @@ func main() {
 	//setup router
 	router := http.NewServeMux()
 	router.HandleFunc("POST /api/students", student.New(storage))
+	router.HandleFunc("GET /api/students/{id}", student.GetById(storage))
+
 	//setup server
 
 	server := http.Server{
